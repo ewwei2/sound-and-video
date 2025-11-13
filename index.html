@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sound and video</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <!-- VIDEO -->
+    <section>
+      <video id="video1" poster="media/jdt-sunset.JPG" width="300px" preload="metadata" playsinline>
+        <source src="media/jdt-sunset.mp4" type="video/mp4" />
+        <!-- you can add more <source> types for wider codec support -->
+        sorry, your browser doesn’t support embedded videos.
+      </video>
+
+      <!-- custom play/pause image button UNDER the video -->
+      <div class="controls">
+        <button
+          class="media-btn"
+          id="video1-btn"
+          aria-label="play video"
+          aria-pressed="false"
+          data-target="video1"
+          data-type="video">
+          <img src="play.jpg" alt="play">
+        </button>
+        <span class="hint">click the image to play/pause</span>
+        
+      </div>
+    </section>
+
+    <!-- AUDIO -->
+    <section>
+      <audio id="audio1" src="media/Ribs.mp3" preload="metadata"></audio>
+
+      <!-- custom play/pause image button UNDER the audio -->
+      <div class="controls">
+        <button
+          class="media-btn"
+          id="audio1-btn"
+          aria-label="play audio"
+          aria-pressed="false"
+          data-target="audio1"
+          data-type="audio">
+          <img src="play.jpg" alt="play">
+        </button>
+        <span class="hint">click the image to play/pause</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // set your image filenames here if different
+    const PLAY_ICON  = 'play.jpg';
+    const PAUSE_ICON = 'pause.jpg';
+
+    function wireButton(btn) {
+      const media = document.getElementById(btn.dataset.target);
+      if (!media) return;
+
+      // when the button is clicked: play/pause
+      btn.addEventListener('click', () => {
+        if (media.paused || media.ended) { media.play(); } else { media.pause(); }
+      });
+
+      // update the button image + ARIA when state changes
+      const setState = (playing) => {
+        btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+        btn.setAttribute('aria-label', playing ? (btn.dataset.type === 'video' ? 'pause video' : 'pause audio')
+                                              : (btn.dataset.type === 'video' ? 'play video'  : 'play audio'));
+        const img = btn.querySelector('img');
+        if (img) img.src = playing ? PAUSE_ICON : PLAY_ICON;
+        img.alt = playing ? 'pause' : 'play';
+      };
+
+      media.addEventListener('play',  () => setState(true));
+      media.addEventListener('pause', () => setState(false));
+      media.addEventListener('ended', () => { media.currentTime = 0; setState(false); });
+
+      // initialize the image based on the initial state
+      setState(!media.paused && !media.ended);
+    }
+
+    // wire both buttons
+    wireButton(document.getElementById('video1-btn'));
+    wireButton(document.getElementById('audio1-btn'));
+  </script>
+</body>
+</html>
